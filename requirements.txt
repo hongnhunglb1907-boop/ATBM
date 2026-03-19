@@ -22,3 +22,4 @@ django-debug-toolbar>=4.2.0
 
 # Environment Variables
 python-decouple>=3.8
+gunicorn
