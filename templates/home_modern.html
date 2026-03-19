@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Trang chủ - DUE Book{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Include Modern Hero Section -->
+{% include 'components/hero_modern.html' with subjects=subjects %}
+
+<!-- Stats Section - Modern -->
+<section class="stats-modern py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card-modern">
+                    <div class="stat-icon-wrapper stat-icon-primary">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ total_books }}</h3>
+                        <p class="stat-label">Sách đang bán</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card-modern">
+                    <div class="stat-icon-wrapper stat-icon-success">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ total_sellers }}</h3>
+                        <p class="stat-label">Người bán</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card-modern">
+                    <div class="stat-icon-wrapper stat-icon-warning">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">24/7</h3>
+                        <p class="stat-label">Hỗ trợ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Books Section -->
+<section class="books-section py-5">
+    <div class="container">
+        <div class="section-header-modern">
+            <div>
+                <h2 class="section-title-modern">
+                    <i class="fas fa-book-open me-2"></i>Sách mới nhất
+                </h2>
+                <p class="section-subtitle">Khám phá những cuốn sách vừa được đăng bán</p>
+            </div>
+            <a href="{% url 'book_list' %}" class="btn btn-view-all">
+                Xem tất cả <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for book in latest_books %}
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    {% include 'components/book_card_modern.html' %}
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="empty-state-modern">
+                        <div class="empty-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3>Chưa có sách nào</h3>
+                        <p>Hãy là người đầu tiên đăng bán sách trên nền tảng của chúng tôi!</p>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'book_create' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus me-2"></i>Đăng sách ngay
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_register' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký ngay
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section - Modern -->
+<section class="features-modern py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title-modern text-center">Tại sao chọn DUE Book?</h2>
+            <p class="section-subtitle">Nền tảng đáng tin cậy dành riêng cho sinh viên DUE</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-1">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Đáng tin cậy</h4>
+                    <p>Hệ thống đánh giá uy tín giúp bạn tìm được người bán tin cậy, giao dịch an toàn.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-2">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Nhanh chóng</h4>
+                    <p>Liên hệ trực tiếp với người bán qua Zalo/Facebook, giao dịch trong vòng vài phút.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-3">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <h4>Tiết kiệm</h4>
+                    <p>Mua sách cũ với giá rẻ hơn đến 80% so với sách mới, vẫn đảm bảo chất lượng.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4>Dễ tìm kiếm</h4>
+                    <p>Tìm kiếm theo tên sách, tác giả, môn học với bộ lọc thông minh, chính xác.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-5">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Giao dịch trực tiếp</h4>
+                    <p>Gặp mặt trực tiếp tại trường, kiểm tra sách trước khi thanh toán an toàn.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern feature-icon-6">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Di động thân thiện</h4>
+                    <p>Truy cập dễ dàng từ điện thoại, mua bán sách mọi lúc mọi nơi.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section - Modern -->
+<section class="cta-modern py-5">
+    <div class="container">
+        <div class="cta-card-modern">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h2 class="cta-title">Bắt đầu mua bán sách ngay hôm nay</h2>
+                    <p class="cta-subtitle">Tham gia cộng đồng hàng ngàn sinh viên DUE</p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="cta-buttons">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'book_create' %}" class="btn btn-cta-primary">
+                                <i class="fas fa-plus me-2"></i>Đăng bán sách
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_register' %}" class="btn btn-cta-primary">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký miễn phí
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'book_list' %}" class="btn btn-cta-secondary">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

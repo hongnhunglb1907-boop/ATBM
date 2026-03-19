@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}{{ book.title }} - DUE Book{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/book-detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="book-detail-page">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-section">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'home' %}">
+                                <i class="fas fa-home me-1"></i>Trang chủ
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'book_list' %}">Danh sách sách</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ book.title|truncatechars:50 }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Product Section -->
+        <div class="product-card">
+            <div class="row g-0">
+                <!-- Image Section -->
+                <div class="col-lg-5">
+                    <div class="product-image-section">
+                        <div class="product-image-wrapper">
+                            {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" class="product-image" alt="{{ book.title }}">
+                            {% else %}
+                                <div class="product-image-placeholder">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="col-lg-7">
+                    <div class="product-info-section">
+                        <!-- Title -->
+                        <h1 class="product-title">{{ book.title }}</h1>
+
+                        <!-- Author -->
+                        {% if book.author %}
+                            <div class="product-author">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Tác giả:</span>
+                                <strong>{{ book.author }}</strong>
+                            </div>
+                        {% endif %}
+
+                        <!-- Badges -->
+                        <div class="product-badges">
+                            {% if book.subject %}
+                                <span class="product-badge category">
+                                    <i class="fas fa-tag"></i>
+                                    {{ book.subject.name }}
+                                </span>
+                            {% endif %}
+
+                            <span class="product-badge condition">
+                                <i class="fas fa-check-circle"></i>
+                                {{ book.get_condition_display }}
+                            </span>
+
+
+                            {% if book.status == 'available' %}
+                                <span class="product-badge status-available">
+                                    <i class="fas fa-check-circle"></i>
+                                    Đang bán
+                                </span>
+                            {% elif book.status == 'sold' %}
+                                <span class="product-badge status-sold">
+                                    <i class="fas fa-times-circle"></i>
+                                    Đã bán
+                                </span>
+                            {% else %}
+                                <span class="product-badge status-reserved">
+                                    <i class="fas fa-clock"></i>
+                                    Đang giữ
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Price -->
+                        <div class="product-price-section">
+                            <div class="price-row">
+                                <span class="price-current">{{ book.price|format_vnd }}</span>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="product-cta">
+                            <a href="#contact-section" class="btn-cta-primary">
+                                <i class="fas fa-phone-alt"></i>
+                                Liên hệ người bán
+                            </a>
+                            <a href="{% url 'user_profile_view' book.seller.username %}" class="btn-cta-secondary">
+                                <i class="fas fa-user"></i>
+                                Xem hồ sơ người bán
+                            </a>
+                        </div>
+
+                        <!-- Seller Card -->
+                        <div class="seller-card">
+                            <div class="seller-header">
+                                {% if book.seller.profile.avatar %}
+                                    <img src="{{ book.seller.profile.avatar.url }}" class="seller-avatar" alt="{{ book.seller.profile.display_name }}">
+                                {% else %}
+                                    <div class="seller-avatar-placeholder">
+                                        {{ book.seller.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="seller-info">
+                                    <div class="seller-name">{{ book.seller.profile.display_name }}</div>
+                                    <div class="seller-rating">
+                                        <div class="stars">
+                                            {% with rating=book.seller.profile.reputation_score|default:0 %}
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endwith %}
+                                        </div>
+                                        <span class="score">{{ book.seller.profile.reputation_score|floatformat:1|default:"0.0" }}</span>
+                                        <span class="count">({{ book.seller.profile.total_reviews|default:0 }} đánh giá)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="product-stats">
+                            <div class="product-stat">
+                                <i class="fas fa-eye"></i>
+                                <span>{{ book.view_count }} lượt xem</span>
+                            </div>
+                            <div class="product-stat">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Đăng {{ book.created_at|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description Card -->
+        <div class="content-card">
+            <div class="content-card-header">
+                <i class="fas fa-info-circle"></i>
+                Mô tả chi tiết
+            </div>
+            <div class="content-card-body">
+                {% if book.description %}
+                    <div class="description-text">{{ book.description|linebreaks }}</div>
+                {% else %}
+                    <p class="text-muted mb-0">Không có mô tả chi tiết.</p>
+                {% endif %}
+
+                {% if book.notes %}
+                    <div class="notes-section mt-3">
+                        <div class="notes-title">
+                            <i class="fas fa-sticky-note"></i>
+                            Ghi chú
+                        </div>
+                        <p class="notes-text">{{ book.notes }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="content-card" id="contact-section">
+            <div class="content-card-header">
+                <i class="fas fa-phone-alt"></i>
+                Thông tin liên hệ
+            </div>
+            <div class="content-card-body">
+                <div class="contact-methods">
+                    {% if book.seller.profile.phone_number %}
+                        <div class="contact-method">
+                            <div class="contact-icon phone">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Số điện thoại</div>
+                                <div class="contact-value">{{ book.seller.profile.phone_number }}</div>
+                            </div>
+                            <a href="tel:{{ book.seller.profile.phone_number }}" class="contact-btn contact-btn-primary">
+                                <i class="fas fa-phone-alt"></i>
+                                Gọi ngay
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    {% if book.seller.profile.zalo_link %}
+                        <div class="contact-method">
+                            <div class="contact-icon zalo">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Zalo</div>
+                                <div class="contact-value">Nhắn tin qua Zalo</div>
+                            </div>
+                            <a href="{{ book.seller.profile.zalo_link }}" target="_blank" class="contact-btn contact-btn-zalo">
+                                <i class="fas fa-comment-dots"></i>
+                                Nhắn tin Zalo
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    {% if book.seller.profile.facebook_link %}
+                        <div class="contact-method">
+                            <div class="contact-icon facebook">
+                                <i class="fab fa-facebook-messenger"></i>
+                            </div>
+                            <div class="contact-info">
+                                <div class="contact-label">Facebook</div>
+                                <div class="contact-value">Nhắn tin Facebook</div>
+                            </div>
+                            <a href="{{ book.seller.profile.facebook_link }}" target="_blank" class="contact-btn contact-btn-facebook">
+                                <i class="fab fa-facebook-messenger"></i>
+                                Nhắn tin Facebook
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    {% if not book.seller.profile.phone_number and not book.seller.profile.zalo_link and not book.seller.profile.facebook_link %}
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Người bán chưa cập nhật thông tin liên hệ.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase Confirmation Card (Non-owner, logged in) -->
+        {% if user.is_authenticated and book.seller != user %}
+            <div class="purchase-card">
+                <div class="purchase-card-header">
+                    <i class="fas fa-shopping-cart"></i>
+                    Xác nhận mua sách
+                </div>
+                <div class="purchase-card-body">
+                    {% if book.status == 'sold' %}
+                        {% if book.buyer == user %}
+                            <div class="alert alert-success mb-3">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Bạn đã được xác nhận là người mua sách này!</strong>
+                            </div>
+                            <a href="{% url 'rating_create' book.seller.pk %}?book={{ book.pk }}" class="purchase-cta">
+                                <i class="fas fa-star"></i>
+                                Đánh giá người bán
+                            </a>
+                        {% else %}
+                            <div class="alert alert-warning mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Sách này đã được bán cho người khác.
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        {% if user_purchase_request %}
+                            {% if user_purchase_request.status == 'pending' %}
+                                <div class="alert alert-info mb-0">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>Yêu cầu mua đang chờ duyệt</strong>
+                                    <p class="mb-0 mt-2">Vui lòng chờ người bán xác nhận.</p>
+                                </div>
+                            {% elif user_purchase_request.status == 'approved' %}
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Yêu cầu đã được duyệt!</strong>
+                                </div>
+                                <a href="{% url 'rating_create' book.seller.pk %}?book={{ book.pk }}" class="purchase-cta">
+                                    <i class="fas fa-star"></i>
+                                    Đánh giá người bán
+                                </a>
+                            {% else %}
+                                <div class="alert alert-danger mb-0">
+                                    <i class="fas fa-times-circle me-2"></i>
+                                    Yêu cầu mua trước đó đã bị từ chối.
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Nếu bạn đã mua sách này, hãy gửi yêu cầu xác nhận để người bán duyệt.
+                            </p>
+                            <a href="{% url 'create_purchase_request' book.pk %}" class="purchase-cta">
+                                <i class="fas fa-check-circle"></i>
+                                Tôi đã mua sách này
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Owner Actions Card -->
+        {% if book.seller == user %}
+            <div class="owner-card">
+                <div class="owner-card-header">
+                    <i class="fas fa-cog"></i>
+                    Quản lý bài đăng
+                </div>
+                <div class="owner-card-body">
+                    <div class="owner-actions">
+                        <a href="{% url 'book_update' book.pk %}" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>
+                            Chỉnh sửa
+                        </a>
+                        <a href="{% url 'book_delete' book.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>
+                            Xóa bài
+                        </a>
+                        {% if book.status == 'available' %}
+                            <a href="{% url 'book_mark_sold' book.pk %}" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i>
+                                Đánh dấu đã bán
+                            </a>
+                        {% else %}
+                            <a href="{% url 'book_mark_available' book.pk %}" class="btn btn-primary">
+                                <i class="fas fa-undo me-1"></i>
+                                Kích hoạt lại
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <small>
+                            <strong>Mẹo:</strong> Bạn có thể thay đổi trạng thái bài đăng giữa "Đang bán" và "Đã bán" bất cứ lúc nào.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Similar Books -->
+        {% if similar_books %}
+            <div class="similar-section">
+                <h2 class="similar-title">
+                    <i class="fas fa-book-open"></i>
+                    Sách tương tự
+                </h2>
+                <div class="row">
+                    {% for similar in similar_books %}
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100 hover-lift">
+                                {% if similar.cover_image %}
+                                    <img src="{{ similar.cover_image.url }}" class="card-img-top" alt="{{ similar.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-book fa-4x text-muted" style="opacity: 0.3;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title text-truncate">{{ similar.title }}</h6>
+                                    <p class="card-text text-danger fw-bold mb-0">{{ similar.price|floatformat:0 }}đ</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ similar.get_absolute_url }}" class="btn btn-sm btn-outline-primary w-100">
+                                        <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Đăng ký - DUE Book{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Thông tin liên hệ bắt buộc:</strong> Để người mua có thể liên hệ với bạn, vui lòng cung cấp số điện thoại, Facebook và Zalo.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- ===== THÔNG TIN TÀI KHOẢN ===== -->
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-user me-1"></i>Thông tin tài khoản
+                        </h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.username.label }} <span class="text-danger">*</span></label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.password.label }} <span class="text-danger">*</span></label>
+                                {{ form.password }}
+                                {% if form.password.errors %}
+                                    <div class="text-danger small">{{ form.password.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{{ form.confirm_password.label }} <span class="text-danger">*</span></label>
+                                {{ form.confirm_password }}
+                                {% if form.confirm_password.errors %}
+                                    <div class="text-danger small">{{ form.confirm_password.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- ===== THÔNG TIN LIÊN HỆ (BẮT BUỘC) ===== -->
+                        <h6 class="text-primary mb-3">
+                            <i class="fas fa-address-book me-1"></i>Thông tin liên hệ <span class="text-danger">*</span>
+                        </h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.phone_number.label }} <span class="text-danger">*</span></label>
+                            {{ form.phone_number }}
+                            <small class="form-text text-muted">{{ form.phone_number.help_text }}</small>
+                            {% if form.phone_number.errors %}
+                                <div class="text-danger small">{{ form.phone_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.facebook_link.label }} <span class="text-danger">*</span></label>
+                            {{ form.facebook_link }}
+                            <small class="form-text text-muted">{{ form.facebook_link.help_text }}</small>
+                            {% if form.facebook_link.errors %}
+                                <div class="text-danger small">{{ form.facebook_link.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.zalo_link.label }} <span class="text-danger">*</span></label>
+                            {{ form.zalo_link }}
+                            <small class="form-text text-muted">{{ form.zalo_link.help_text }}</small>
+                            {% if form.zalo_link.errors %}
+                                <div class="text-danger small">{{ form.zalo_link.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- ===== THÔNG TIN TÙY CHỌN ===== -->
+                        <h6 class="text-secondary mb-3">
+                            <i class="fas fa-plus-circle me-1"></i>Thông tin thêm (tùy chọn)
+                        </h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.student_id.label }}</label>
+                            {{ form.student_id }}
+                            {% if form.student_id.errors %}
+                                <div class="text-danger small">{{ form.student_id.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.address.label }}</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger small">{{ form.address.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-1"></i>Đăng ký tài khoản
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        Đã có tài khoản? <a href="{% url 'user_login' %}">Đăng nhập</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

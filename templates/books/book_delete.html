@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Xóa bài đăng - DUE Book{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa</h4>
+                </div>
+                <div class="card-body">
+                    <p>Bạn có chắc chắn muốn xóa bài đăng sách <strong>"{{ object.title }}"</strong>?</p>
+                    <p class="text-danger">Hành động này không thể hoàn tác!</p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Xóa bài đăng
+                            </button>
+                            <a href="{{ object.get_absolute_url }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

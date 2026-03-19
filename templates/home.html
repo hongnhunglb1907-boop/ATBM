@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static custom_filters %}
+
+{% block title %}Trang chủ - DUE Book{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- ========== HERO SECTION ========== -->
+<section class="home-hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-book-open me-2"></i>Trao đổi sách cũ cho sinh viên DUE
+            </h1>
+            <p class="hero-subtitle">
+                Mua bán – trao đổi sách học tập nhanh chóng, an toàn, tiết kiệm
+            </p>
+            
+            <!-- Search Box -->
+            <div class="search-box">
+                <form action="{% url 'book_list' %}" method="get" class="search-form">
+                    <input type="text" name="q" class="search-input" 
+                           placeholder="Tìm kiếm theo tên sách, tác giả...">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search me-2"></i>Tìm sách
+                    </button>
+                </form>
+            </div>
+            
+            <!-- CTA Buttons -->
+            <div class="hero-cta">
+                <a href="{% url 'book_list' %}" class="btn-cta-primary">
+                    <i class="fas fa-compass"></i>Khám phá sách
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'book_create' %}" class="btn-cta-secondary">
+                        <i class="fas fa-plus"></i>Đăng bán sách
+                    </a>
+                {% else %}
+                    <a href="{% url 'user_register' %}" class="btn-cta-secondary">
+                        <i class="fas fa-user-plus"></i>Đăng ký ngay
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== MARKETPLACE LAYOUT ========== -->
+<section class="marketplace-section">
+    <div class="container">
+        <div class="row">
+            <!-- SIDEBAR - Categories (25%) -->
+            <div class="col-lg-3 col-md-4">
+                <aside class="marketplace-sidebar">
+                    <div class="sidebar-card">
+                        <h5 class="sidebar-title">
+                            <i class="fas fa-layer-group me-2"></i>Danh mục sách
+                        </h5>
+                        <div class="category-list">
+                            <a href="{% url 'book_list' %}" 
+                               class="category-item {% if not request.GET.subject %}active{% endif %}">
+                                <i class="fas fa-th-large"></i>
+                                <span>Tất cả sách</span>
+                                <span class="category-count">{{ total_books|default:0 }}</span>
+                            </a>
+                            {% for subject in subjects %}
+                                <a href="{% url 'book_list' %}?subject={{ subject.pk }}" 
+                                   class="category-item {% if request.GET.subject == subject.pk|stringformat:'s' %}active{% endif %}">
+                                    <i class="fas fa-book"></i>
+                                    <span>{{ subject.name }}</span>
+                                </a>
+                            {% empty %}
+                                <a href="{% url 'book_list' %}" class="category-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>Kinh tế</span>
+                                </a>
+                                <a href="{% url 'book_list' %}" class="category-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>Marketing</span>
+                                </a>
+                                <a href="{% url 'book_list' %}" class="category-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>Luật</span>
+                                </a>
+                                <a href="{% url 'book_list' %}" class="category-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>CNTT</span>
+                                </a>
+                                <a href="{% url 'book_list' %}" class="category-item">
+                                    <i class="fas fa-book"></i>
+                                    <span>Ngoại ngữ</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions Card -->
+                    <div class="sidebar-card sidebar-actions">
+                        <h5 class="sidebar-title">
+                            <i class="fas fa-bolt me-2"></i>Thao tác nhanh
+                        </h5>
+                        <div class="quick-actions">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'book_create' %}" class="quick-action-btn">
+                                    <i class="fas fa-plus-circle"></i>Đăng bán sách
+                                </a>
+                                <a href="{% url 'my_books' %}" class="quick-action-btn">
+                                    <i class="fas fa-book"></i>Sách của tôi
+                                </a>
+                            {% else %}
+                                <a href="{% url 'user_register' %}" class="quick-action-btn">
+                                    <i class="fas fa-user-plus"></i>Đăng ký tài khoản
+                                </a>
+                                <a href="{% url 'user_login' %}" class="quick-action-btn">
+                                    <i class="fas fa-sign-in-alt"></i>Đăng nhập
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            
+            <!-- MAIN CONTENT - Books (75%) -->
+            <div class="col-lg-9 col-md-8">
+                <div class="marketplace-content">
+                    <div class="content-header">
+                        <h2 class="content-title">
+                            <i class="fas fa-fire text-danger me-2"></i>Sách mới nhất
+                        </h2>
+                        <a href="{% url 'book_list' %}" class="view-all-link">
+                            Xem tất cả <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="books-grid-marketplace">
+                        {% for book in latest_books %}
+                            <div class="book-card-marketplace">
+                                <div class="book-card-image-wrapper">
+                                    {% if book.cover_image %}
+                                        <img src="{{ book.cover_image.url }}" class="book-card-image" alt="{{ book.title }}">
+                                    {% else %}
+                                        <div class="book-card-placeholder">
+                                            <i class="fas fa-book"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="book-card-body">
+                                    {% if book.subject %}
+                                        <span class="book-category-tag">{{ book.subject.code }}</span>
+                                    {% endif %}
+                                    
+                                    <h3 class="book-card-title">{{ book.title }}</h3>
+                                    
+                                    <div class="book-card-seller">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>{{ book.seller.profile.display_name }}</span>
+                                    </div>
+                                    
+                                    <div class="book-card-price">
+                                        <span class="price-current">{{ book.price|format_vnd }}</span>
+                                    </div>
+                                    
+                                    <a href="{{ book.get_absolute_url }}" class="book-card-btn">
+                                        <i class="fas fa-eye"></i>Xem chi tiết
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-marketplace">
+                                <i class="fas fa-book-open"></i>
+                                <h3>Chưa có sách nào</h3>
+                                <p>Hãy là người đầu tiên đăng bán sách!</p>
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'book_create' %}" class="btn-cta-primary">
+                                        <i class="fas fa-plus me-1"></i>Đăng bán ngay
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FEATURES SECTION ========== -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="features-title">Tại sao chọn DUE Book?</h2>
+        <p class="features-subtitle">Nền tảng mua bán sách tin cậy dành riêng cho sinh viên ĐH Kinh tế</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Đáng tin cậy</h4>
+                <p>Hệ thống đánh giá uy tín giúp bạn tìm được người bán tin cậy</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4>Nhanh chóng</h4>
+                <p>Liên hệ trực tiếp qua Zalo/Facebook, giao dịch trong vài phút</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-piggy-bank"></i>
+                </div>
+                <h4>Tiết kiệm</h4>
+                <p>Mua sách cũ với giá rẻ đến 80% so với sách mới</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4>Dễ tìm kiếm</h4>
+                <p>Tìm theo tên sách, tác giả, môn học với bộ lọc thông minh</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h4>Giao dịch trực tiếp</h4>
+                <p>Gặp mặt tại trường, kiểm tra sách trước khi thanh toán</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h4>Mobile thân thiện</h4>
+                <p>Truy cập dễ dàng từ điện thoại, mua bán mọi lúc mọi nơi</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CTA SECTION ========== -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Bắt đầu mua bán sách ngay hôm nay!</h2>
+            <p class="cta-subtitle">Tham gia cộng đồng hàng ngàn sinh viên DUE</p>
+            <div class="cta-buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'book_create' %}" class="btn-cta-primary">
+                        <i class="fas fa-plus"></i>Đăng bán sách
+                    </a>
+                {% else %}
+                    <a href="{% url 'user_register' %}" class="btn-cta-primary">
+                        <i class="fas fa-user-plus"></i>Đăng ký miễn phí
+                    </a>
+                {% endif %}
+                <a href="{% url 'book_list' %}" class="btn-cta-secondary">
+                    <i class="fas fa-search"></i>Tìm kiếm sách
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

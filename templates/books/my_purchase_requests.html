@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Yêu cầu mua của tôi - DUE Book{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-shopping-cart me-2"></i>Yêu cầu mua của tôi</h2>
+        <a href="{% url 'my_books' %}" class="btn btn-outline-primary">
+            <i class="fas fa-book me-1"></i>Sách của tôi
+        </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">{{ pending_count }}</h3>
+                    <p class="text-muted mb-0">Chờ duyệt</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success">{{ approved_count }}</h3>
+                    <p class="text-muted mb-0">Đã duyệt</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-danger">{{ rejected_count }}</h3>
+                    <p class="text-muted mb-0">Đã từ chối</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Danh sách yêu cầu</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sách</th>
+                            <th>Người bán</th>
+                            <th>Giá</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày yêu cầu</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests_sent %}
+                            <tr>
+                                <td>
+                                    <a href="{{ req.book.get_absolute_url }}">{{ req.book.title }}</a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'user_profile_view' req.book.seller.username %}">{{ req.book.seller.profile.display_name }}</a>
+                                </td>
+                                <td>{{ req.book.price|floatformat:0 }}đ</td>
+                                <td>
+                                    {% if req.status == 'pending' %}
+                                        <span class="badge bg-warning">Chờ duyệt</span>
+                                    {% elif req.status == 'approved' %}
+                                        <span class="badge bg-success">Đã duyệt</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Đã từ chối</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ req.created_at|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    <a href="{{ req.book.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </a>
+                                    {% if req.status == 'approved' %}
+                                        <a href="{% url 'rating_create' req.book.seller.pk %}?book={{ req.book.pk }}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-star"></i> Đánh giá
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Bạn chưa gửi yêu cầu mua nào.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
