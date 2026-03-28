@@ -163,3 +163,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # tự động phục vụ các file static cho Gunicorn.
 # Thư viện này đã được cài đặt thành công trên Render của bạn rồi (tôi thấy trong log).
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
