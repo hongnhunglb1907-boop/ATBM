@@ -150,3 +150,15 @@ LOGIN_REDIRECT_URL = 'books:home'
 
 # URL để redirect sau khi đăng xuất
 LOGOUT_REDIRECT_URL = 'books:home'
+# 1. Đảm bảo static URL vẫn giữ nguyên
+STATIC_URL = '/static/'
+
+# 2. Thêm dòng này để định nghĩa nơi lưu tập trung các file static
+# Django sẽ gom tất cả CSS/JS vào thư mục này khi deploy
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# 3. (QUAN TRỌNG NHẤT) Thêm dòng này để cho phép thư viện 'whitenoise'
+# tự động phục vụ các file static cho Gunicorn.
+# Thư viện này đã được cài đặt thành công trên Render của bạn rồi (tôi thấy trong log).
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
