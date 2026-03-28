@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sách đã mua - DUE Book{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Purchased Books Page Styles */
+    .purchased-books-page {
+        background-color: #f8fafc;
+        padding: 2rem 0;
+        min-height: calc(100vh - 200px);
+    }
+
+    :root {
+        --light-bg: #f8fafc;
+        --primary-color: #005a9c;
+        --primary-dark: #004080;
+        --success-color: #10b981;
+        --border-color: #e2e8f0;
+        --dark-text: #1e293b;
+        --light-text: #64748b;
+        --secondary-color: #64748b;
+        --radius-xl: 1rem;
+        --radius-md: 0.5rem;
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .page-header {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .page-title i {
+        color: var(--success-color);
+    }
+
+    .page-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--light-text);
+    }
+
+    /* Purchased Books Grid */
+    .purchased-books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Purchased Book Card */
+    .purchased-book-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .purchased-book-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+
+    .book-header {
+        position: relative;
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .book-image {
+        width: 100px;
+        height: 130px;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+    .book-image-placeholder {
+        width: 100px;
+        height: 130px;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .book-image-placeholder i {
+        font-size: 2rem;
+        color: var(--secondary-color);
+        opacity: 0.5;
+    }
+
+    .book-info {
+        flex: 1;
+    }
+
+    .book-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .book-title a {
+        color: var(--dark-text);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .book-title a:hover {
+        color: var(--primary-color);
+    }
+
+    .book-meta {
+        font-size: 0.875rem;
+        color: var(--light-text);
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .book-meta i {
+        color: var(--primary-color);
+    }
+
+    .book-price {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--success-color);
+        margin-top: 0.5rem;
+    }
+
+    .book-body {
+        padding: 1rem;
+    }
+
+    .seller-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: var(--light-bg);
+        border-radius: var(--radius-md);
+    }
+
+    .seller-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--border-color);
+    }
+
+    .seller-avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .seller-details {
+        flex: 1;
+    }
+
+    .seller-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--dark-text);
+    }
+
+    .seller-name a {
+        color: var(--dark-text);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .seller-name a:hover {
+        color: var(--primary-color);
+    }
+
+    .seller-contact {
+        font-size: 0.75rem;
+        color: var(--light-text);
+    }
+
+    /* Empty State */
+    .empty-purchased {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 2px dashed var(--border-color);
+        grid-column: 1 / -1;
+    }
+
+    .empty-purchased i {
+        font-size: 4rem;
+        color: var(--secondary-color);
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-purchased h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-text);
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-purchased p {
+        color: var(--light-text);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 767px) {
+        .purchased-books-page {
+            padding: 1rem 0;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .page-stats {
+            gap: 1rem;
+            width: 100%;
+            justify-content: space-around;
+        }
+
+        .purchased-books-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .book-image,
+        .book-image-placeholder {
+            width: 80px;
+            height: 100px;
+        }
+
+        .book-title {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="purchased-books-page">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <i class="fas fa-shopping-cart"></i>
+                Sách đã mua
+            </div>
+            {% if purchased_books %}
+                <div class="page-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ total_count }}</div>
+                        <div class="stat-label">Sách đã mua</div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Purchased Books Grid -->
+        {% if purchased_books %}
+            <div class="purchased-books-grid">
+                {% for item in purchased_books %}
+                    <div class="purchased-book-card">
+                        <!-- Book Header -->
+                        <div class="book-header">
+                            {% if item.book.cover_image %}
+                                <img src="{{ item.book.cover_image.url }}" class="book-image" alt="{{ item.book.title }}">
+                            {% else %}
+                                <div class="book-image-placeholder">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            {% endif %}
+
+                            <div class="book-info">
+                                <h3 class="book-title">
+                                    <a href="{{ item.book.get_absolute_url }}">{{ item.book.title }}</a>
+                                </h3>
+                                <div class="book-meta">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Người bán: </span>
+                                    <a href="{% url 'users:user_profile_by_username' item.seller.username %}" class="text-decoration-none">
+                                        <strong>{{ item.seller.username|title }}</strong>
+                                    </a>
+                                </div>
+                                <div class="book-meta">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Đã mua: {{ item.purchase_date|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="book-price">{{ item.book.price|floatformat:0 }}đ</div>
+                            </div>
+                        </div>
+
+                        <!-- Book Body -->
+                        <div class="book-body">
+                            <!-- Seller Info -->
+                            <div class="seller-info">
+                                {% if item.seller.profile.avatar %}
+                                    <img src="{{ item.seller.profile.avatar.url }}" class="seller-avatar" alt="{{ item.seller.username }}">
+                                {% else %}
+                                    <div class="seller-avatar-placeholder">
+                                        {{ item.seller.username|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="seller-details">
+                                    <div class="seller-name">
+                                        <a href="{% url 'users:user_profile_by_username' item.seller.username %}">
+                                            {{ item.seller.username|title }}
+                                        </a>
+                                    </div>
+                                    <div class="seller-contact">
+                                        {% if item.seller.email %}
+                                            <i class="fas fa-envelope me-1"></i>{{ item.seller.email }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-purchased">
+                <i class="fas fa-shopping-bag"></i>
+                <h3>Bạn chưa mua sách nào</h3>
+                <p>Hãy khám phá và mua sách từ cộng đồng sinh viên DUE!</p>
+                <a href="{% url 'books:book_list' %}" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>Tìm kiếm sách
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
